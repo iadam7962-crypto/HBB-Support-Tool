@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HBB Support Decision Tree</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .admin-link {
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .admin-link a {
+            color: #dc2626;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .admin-link a:hover {
+            text-decoration: underline;
+        }
+
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .login-modal.active {
+            display: flex;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .login-box h2 {
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        .login-error {
+            color: #dc2626;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .login-error.show {
+            display: block;
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .mode-btn.active {
+            background: #dc2626;
+            color: white;
+        }
+
+        .mode-btn:not(.active) {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-height: 500px;
+        }
+
+        /* Viewer Mode Styles */
+        .node-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .node-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #dc2626;
+            position: relative;
+        }
+
+        .node-content {
+            font-size: 18px;
+            color: #333;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .option-btn {
+            padding: 15px 20px;
+            border: 2px solid #dc2626;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #dc2626;
+            transition: all 0.3s;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .option-btn:hover {
+            background: #dc2626;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
+        }
+
+        .option-btn .next-node {
+            font-size: 12px;
+            opacity: 0.7;
+            background: rgba(220, 38, 38, 0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .option-btn:hover .next-node {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .result-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            white-space: pre-line;
+        }
+
+        .result-box.warning {
+            background: #fff3e0;
+            border-left-color: #ff9800;
+        }
+
+        .result-box.info {
+            background: #e3f2fd;
+            border-left-color: #2196f3;
+        }
+
+        .breadcrumb {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .breadcrumb-item {
+            cursor: pointer;
+            color: #dc2626;
+            font-size: 14px;
+        }
+
+        .breadcrumb-item:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb-separator {
+            color: #999;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            border: 2px solid #dc2626;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #dc2626;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: #dc2626;
+            color: white;
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Editor Mode Styles */
+        .editor-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .editor-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .node-list {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .node-list h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .node-item {
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .node-item:hover {
+            border-color: #dc2626;
+        }
+
+        .node-item.selected {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .node-item-id {
+            font-size: 12px;
+            color: #dc2626;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .node-type-badge {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            color: white;
+        }
+
+        .node-type-question { background: #3b82f6; }
+        .node-type-result { background: #10b981; }
+        .node-type-action { background: #f59e0b; }
+        .node-type-info { background: #6366f1; }
+
+        .node-item-content {
+            font-size: 14px;
+            color: #333;
+            margin-top: 5px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .editor-panel {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .options-editor {
+            margin-top: 15px;
+        }
+
+        .option-editor-item {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+
+        .option-editor-item input {
+            margin-bottom: 8px;
+            width: calc(50% - 10px);
+            display: inline-block;
+        }
+
+        .option-editor-item input:first-child {
+            margin-right: 10px;
+        }
+
+        .remove-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #b91c1b;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .statistics-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4caf50;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #dc2626;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .validation-errors {
+            background: #fee;
+            border-left: 4px solid #f44336;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .validation-error-item {
+            color: #c00;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 HBB Support Tool</h1>
+            <div class="admin-link">
+                <a href="#" onclick="showLogin(); return false;">Admin Access</a>
+            </div>
+            <div class="mode-toggle" id="mode-toggle" style="display: none;">
+                <button class="mode-btn active" onclick="switchMode('viewer')">📋 Viewer</button>
+                <button class="mode-btn" onclick="switchMode('editor')">✏️ Editor</button>
+                <button class="mode-btn" onclick="generateTreeVisualization()">🌳 Visualize</button>
+                <button class="mode-btn" onclick="exportDataWithMetadata()">💾 Export</button>
+                <button class="mode-btn" onclick="importDataWithValidation()">📥 Import</button>
+                <button class="mode-btn" onclick="validateTree()">🔍 Validate</button>
+                <button class="mode-btn" onclick="logout()">🚪 Logout</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Viewer Mode -->
+            <div id="viewer-mode">
+                <div class="breadcrumb" id="breadcrumb"></div>
+                <div class="statistics-panel" id="statistics-panel" style="display: none;">
+                    <h4>📊 Current Session</h4>
+                    <div class="stat-grid" id="statistics-content"></div>
+                </div>
+                <div class="node-container" id="node-display"></div>
+                <div class="controls">
+                    <button class="control-btn" id="back-btn" onclick="goBack()" disabled>← Back</button>
+                    <button class="control-btn" onclick="resetTree()">🔄 Start Over</button>
+                    <button class="control-btn" onclick="showStatistics()">📊 Show Stats</button>
+                </div>
+            </div>
+
+            <!-- Editor Mode -->
+            <div id="editor-mode" style="display: none;">
+                <div class="validation-errors" id="validation-errors" style="display: none;"></div>
+                <div class="editor-layout">
+                    <div class="node-list">
+                        <h3>Decision Tree Nodes</h3>
+                        <input type="text" class="search-box" placeholder="🔍 Search nodes..." id="node-search" onkeyup="filterNodes()">
+                        <button class="btn btn-success" style="width: 100%; margin-bottom: 15px;" onclick="addNewNode()">+ Add New Node</button>
+                        <button class="btn btn-secondary" style="width: 100%; margin-bottom: 15px;" onclick="showAllStatistics()">📈 All Statistics</button>
+                        <div id="nodes-list"></div>
+                    </div>
+                    <div class="editor-panel" id="editor-panel">
+                        <p style="color: #666; text-align: center;">Select a node to edit or create a new one</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="login-modal" id="login-modal">
+        <div class="login-box">
+            <h2>🔐 Admin Login</h2>
+            <div class="form-group">
+                <label>Username:</label>
+                <input type="text" id="username" placeholder="Enter username" onkeypress="if(event.key==='Enter') attemptLogin()">
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="password" placeholder="Enter password" onkeypress="if(event.key==='Enter') attemptLogin()">
+            </div>
+            <div class="login-error" id="login-error">Invalid username or password</div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="attemptLogin()">Login</button>
+                <button class="btn btn-secondary" onclick="closeLogin()">Cancel</button>
+            </div>
+            <p style="margin-top: 15px; font-size: 12px; color: #666; text-align: center;">
+                Default: Adam123 / admin
+            </p>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Enhanced Decision Tree Data Structure
+        let decisionTree = {
+            start: {
+                id: "start",
+                type: "question",
+                content: "Choose Service Type:",
+                options: [
+                    { label: "VFC", nextNode: "symptom_selection" },
+                    { label: "VFS", nextNode: "symptom_selection" },
+                    { label: "VFP", nextNode: "under_construction" },
+                    { label: "VFH", nextNode: "under_construction" },
+                    { label: "VFL", nextNode: "under_construction" }
+                ]
+            },
+            symptom_selection: {
+                id: "symptom_selection",
+                type: "question",
+                content: "Select the Symptom:",
+                options: [
+                    { label: "Intermittent Connection", nextNode: "itec_start" },
+                    { label: "No Connection", nextNode: "under_construction" },
+                    { label: "Slow Speeds", nextNode: "under_construction" }
+                ]
+            },
+            under_construction: {
+                id: "under_construction",
+                type: "info",
+                content: "🚧 Under Construction - This service type or symptom troubleshooting flow is currently being developed.",
+                options: [
+                    { label: "Start Over", nextNode: "start" }
+                ]
+            },
+            itec_start: {
+                id: "itec_start",
+                type: "question",
+                content: "ITEC / Haemonetics Start - Select initial pathway:",
+                options: [
+                    { label: "Proceed with Home Heals via VRA", nextNode: "home_heals_check" },
+                    { label: "IQPS - Home Checks", nextNode: "iqps_home_checks" }
+                ]
+            },
+            home_heals_check: {
+                id: "home_heals_check",
+                type: "question",
+                content: "Is the Home in area for PTP areas via VRA?",
+                options: [
+                    { label: "Yes", nextNode: "pattern_detected" },
+                    { label: "No", nextNode: "iqps_home_checks" }
+                ]
+            },
+            iqps_home_checks: {
+                id: "iqps_home_checks",
+                type: "info",
+                content: "Performing IQPS - Home Checks. Proceeding to next validation step.",
+                options: [
+                    { label: "Continue", nextNode: "pattern_detected" }
+                ]
+            },
+            pattern_detected: {
+                id: "pattern_detected",
+                type: "question",
+                content: "Are any patterns detected?",
+                options: [
+                    { label: "Yes", nextNode: "ac_outage_check" },
+                    { label: "No", nextNode: "ac_outage_check" }
+                ]
+            },
+            ac_outage_check: {
+                id: "ac_outage_check",
+                type: "question",
+                content: "Check for AC outage - Any issues detected?",
+                options: [
+                    { label: "Yes", nextNode: "dld_testing" },
+                    { label: "No", nextNode: "dld_testing" }
+                ]
+            },
+            dld_testing: {
+                id: "dld_testing",
+                type: "question",
+                content: "DLD Testing - Is the fault found?",
+                options: [
+                    { label: "Yes", nextNode: "storage_provision" },
+                    { label: "No", nextNode: "error_match_kaang" }
+                ]
+            },
+            storage_provision: {
+                id: "storage_provision",
+                type: "question",
+                content: "Initiate a DLD Storage Provision - Is everything resolved?",
+                options: [
+                    { label: "Yes", nextNode: "bypass_fix" },
+                    { label: "No", nextNode: "remedy_ticket" }
+                ]
+            },
+            bypass_fix: {
+                id: "bypass_fix",
+                type: "result",
+                content: "✅ Issue resolved! Bypass fix has been applied successfully.",
+                options: [
+                    { label: "Start Over", nextNode: "start" }
+                ]
+            },
+            remedy_ticket: {
+                id: "remedy_ticket",
+                type: "action",
+                content: "⚠️ Raise a remedy ticket for bypasses. Issue requires escalation.",
+                options: [
+                    { label: "End", nextNode: "end" },
+                    { label: "Start Over", nextNode: "start" }
+                ]
+            },
+            error_match_kaang: {
+                id: "error_match_kaang",
+                type: "question",
+                content: "Error match - Does the error match on KAANG?",
+                options: [
+                    { label: "Yes", nextNode: "storage_provision" },
+                    { label: "No", nextNode: "serial_number_check" }
+                ]
+            },
+            serial_number_check: {
+                id: "serial_number_check",
+                type: "question",
+                content: "Contact facility and request Serial Number for DX boxes. Has it been resolved?",
+                options: [
+                    { label: "Yes", nextNode: "master_socket_fix" },
+                    { label: "No", nextNode: "hdm_ibm_escalation" }
+                ]
+            },
+            master_socket_fix: {
+                id: "master_socket_fix",
+                type: "info",
+                content: "If the issue is now resolved, the master socket needs to be replaced/fixed. Provide resolution steps.",
+                options: [
+                    { label: "Issue Resolved", nextNode: "end" },
+                    { label: "Start Over", nextNode: "start" }
+                ]
+            },
+            hdm_ibm_escalation: {
+                id: "hdm_ibm_escalation",
+                type: "question",
+                content: "HDM IBM Error - Are faults still being detected?",
+                options: [
+                    { label: "Yes", nextNode: "hdm_fault_process" },
+                    { label: "No", nextNode: "main_reason_check" }
+                ]
+            },
+            hdm_fault_process: {
+                id: "hdm_fault_process",
+                type: "action",
+                content: "📋 If ONMP raised is triggered to HDM (Home Device Manager) Call 1: Yes/No (or NA) \n\nThis further raised is not customer initiated and could be:\n- More updates pushed to devices\n- Error or outage is not customer initiated and could be monitored by the system\n- PAR - caused by a fault within the power supply; you must try another power socket\n- HTP - Must try another socket",
+                options: [
+                    { label: "Continue Investigation", nextNode: "main_reason_check" }
+                ]
+            },
+            main_reason_check: {
+                id: "main_reason_check",
+                type: "question",
+                content: "Initiate service call through HDM (Re: Engineer visit). If you can't determine the main reason of the fault:",
+                options: [
+                    { label: "Schedule Engineer Visit", nextNode: "engineer_validation" },
+                    { label: "More Investigation Needed", nextNode: "storage_provision" }
+                ]
+            },
+            engineer_validation: {
+                id: "engineer_validation",
+                type: "result",
+                content: "✅ Engineer visit scheduled. Monitor for validation and resolution.",
+                options: [
+                    { label: "Complete", nextNode: "end" },
+                    { label: "Start Over", nextNode: "start" }
+                ]
+            },
+            end: {
+                id: "end",
+                type: "result",
+                content: "🎯 Process Complete. Thank you for using the HBB Support Tool!",
+                options: [
+                    { label: "Start Over", nextNode: "start" }
+                ]
+            }
+        };
+
+        // State Management
+        let currentNode = "start";
+        let history = [];
+        let currentMode = "viewer";
+        let selectedNodeId = null;
+        let isAdmin = false;
+        let autoSaveTimer = null;
+
+        // Analytics System
+        const analytics = {
+            startTime: null,
+            currentPath: [],
+            timeSpentOnNodes: {},
+            totalSessions: 0,
+            completedPaths: [],
+            
+            init() {
+                this.loadFromStorage();
+            },
+            
+            startSession() {
+                this.startTime = Date.now();
+                this.currentPath = [];
+                this.timeSpentOnNodes = {};
+                this.totalSessions++;
+                
+                this.enterNode(currentNode);
+                this.saveToStorage();
+            },
+            
+            enterNode(nodeId) {
+                this.currentPath.push({
+                    nodeId,
+                    timestamp: Date.now(),
+                    action: 'enter'
+                });
+                
+                if (!this.timeSpentOnNodes[nodeId]) {
+                    this.timeSpentOnNodes[nodeId] = {
+                        visits: 0,
+                        totalTime: 0,
+                        lastEntered: null
+                    };
+                }
+                
+                this.timeSpentOnNodes[nodeId].visits++;
+                this.timeSpentOnNodes[nodeId].lastEntered = Date.now();
+                
+                this.saveToStorage();
+            },
+            
+            exitNode(nodeId) {
+                if (this.timeSpentOnNodes[nodeId] && this.timeSpentOnNodes[nodeId].lastEntered) {
+                    const timeSpent = Date.now() - this.timeSpentOnNodes[nodeId].lastEntered;
+                    this.timeSpentOnNodes[nodeId].totalTime += timeSpent;
+                    this.timeSpentOnNodes[nodeId].lastEntered = null;
+                    
+                    this.currentPath.push({
+                        nodeId,
+                        timestamp: Date.now(),
+                        action: 'exit',
+                        timeSpent: timeSpent
+                    });
+                    
+                    this.saveToStorage();
+                }
+            },
+            
+            completePath() {
+                const path = {
+                    nodes: [...this.currentPath],
+                    duration: Date.now() - this.startTime,
+                    timestamp: new Date().toISOString(),
+                    startNode: this.currentPath[0]?.nodeId || 'unknown',
+                    endNode: currentNode
+                };
+                
+                this.completedPaths.push(path);
+                this.saveToStorage();
+                
+                // Show completion notification
+                showNotification(`✅ Path completed in ${Math.round(path.duration/1000)} seconds!`);
+            },
+            
+            getNodeStats(nodeId) {
+                const stats = this.timeSpentOnNodes[nodeId] || { visits: 0, totalTime: 0 };
+                return {
+                    visits: stats.visits,
+                    avgTime: stats.visits > 0 ? Math.round(stats.totalTime / stats.visits / 1000) : 0
+                };
+            },
+            
+            getOverallStats() {
+                const totalVisits = Object.values(this.timeSpentOnNodes).reduce((sum, node) => sum + node.visits, 0);
+                const totalTime = Object.values(this.timeSpentOnNodes).reduce((sum, node) => sum + node.totalTime, 0);
+                
+                return {
+                    totalSessions: this.totalSessions,
+                    totalVisits: totalVisits,
+                    totalTime: Math.round(totalTime / 1000),
+                    completedPaths: this.completedPaths.length,
+                    avgPathTime: this.completedPaths.length > 0 
+                        ? Math.round(this.completedPaths.reduce((sum, path) => sum + path.duration, 0) / this.completedPaths.length / 1000)
+                        : 0
+                };
+            },
+            
+            saveToStorage() {
+                const data = {
+                    totalSessions: this.totalSessions,
+                    timeSpentOnNodes: this.timeSpentOnNodes,
+                    completedPaths: this.completedPaths
+                };
+                localStorage.setItem('hbb_analytics', JSON.stringify(data));
+            },
+            
+            loadFromStorage() {
+                try {
+                    const data = JSON.parse(localStorage.getItem('hbb_analytics') || '{}');
+                    this.totalSessions = data.totalSessions || 0;
+                    this.timeSpentOnNodes = data.timeSpentOnNodes || {};
+                    this.completedPaths = data.completedPaths || [];
+                } catch (e) {
+                    console.error('Error loading analytics:', e);
+                }
+            }
+        };
+
+        // Initialize
+        function init() {
+            analytics.init();
+            analytics.startSession();
+            displayNode(currentNode);
+            checkAdminStatus();
+            setupKeyboardShortcuts();
+        }
+
+        function checkAdminStatus() {
+            const adminStatus = sessionStorage.getItem('isAdmin');
+            if (adminStatus === 'true') {
+                isAdmin = true;
+                showAdminControls();
+            }
+        }
+
+        function showAdminControls() {
+            document.getElementById('mode-toggle').style.display = 'flex';
+        }
+
+        function hideAdminControls() {
+            document.getElementById('mode-toggle').style.display = 'none';
+        }
+
+        // Login Functions
+        function showLogin() {
+            document.getElementById('login-modal').classList.add('active');
+            document.getElementById('login-error').classList.remove('show');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('username').focus();
+        }
+
+        function closeLogin() {
+            document.getElementById('login-modal').classList.remove('active');
+        }
+
+        function attemptLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'Adam123' && password === 'admin') {
+                isAdmin = true;
+                sessionStorage.setItem('isAdmin', 'true');
+                showAdminControls();
+                closeLogin();
+                showNotification('✅ Welcome, Admin!');
+            } else {
+                document.getElementById('login-error').classList.add('show');
+                document.getElementById('password').value = '';
+                document.getElementById('password').focus();
+            }
+        }
+
+        function logout() {
+            isAdmin = false;
+            sessionStorage.removeItem('isAdmin');
+            hideAdminControls();
+            switchMode('viewer');
+            showNotification('👋 Logged out successfully');
+        }
+
+        // Notification System
+        function showNotification(message, duration = 3000) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+
+        // Display current node
+        function displayNode(nodeId) {
+            analytics.exitNode(currentNode);
+            
+            const node = decisionTree[nodeId];
+            if (!node) {
+                console.error("Node not found:", nodeId);
+                showNotification("❌ Node not found: " + nodeId);
+                return;
+            }
+
+            currentNode = nodeId;
+            analytics.enterNode(nodeId);
+
+            const display = document.getElementById('node-display');
+            let html = `
+                <div class="node-header">
+                    <div class="node-content">${node.content}</div>
+                </div>
+            `;
+
+            // Add type-specific styling
+            if (node.type === 'result') {
+                html += `<div class="result-box">${node.content}</div>`;
+                analytics.completePath();
+            } else if (node.type === 'action') {
+                html += `<div class="result-box warning">${node.content}</div>`;
+            } else if (node.type === 'info') {
+                html += `<div class="result-box info">${node.content}</div>`;
+            }
+
+            if (node.options && node.options.length > 0) {
+                html += '<div class="options-container">';
+                node.options.forEach((option, index) => {
+                    html += `
+                        <button class="option-btn" onclick="selectOption('${option.nextNode}')">
+                            ${option.label}
+                            <span class="next-node">${option.nextNode}</span>
+                        </button>
+                    `;
+                });
+                html += '</div>';
+            }
+
+            display.innerHTML = html;
+            updateBreadcrumb();
+            document.getElementById('back-btn').disabled = history.length === 0;
+        }
+
+        function selectOption(nextNodeId) {
+            history.push(currentNode);
+            displayNode(nextNodeId);
+        }
+
+        function goBack() {
+            if (history.length > 0) {
+                analytics.exitNode(currentNode);
+                const previousNode = history.pop();
+                analytics.enterNode(previousNode);
+                displayNode(previousNode);
+            }
+        }
+
+        function resetTree() {
+            analytics.exitNode(currentNode);
+            history = [];
+            analytics.startSession();
+            displayNode("start");
+            showNotification('🔄 Tree reset to start');
+        }
+
+        function updateBreadcrumb() {
+            const breadcrumb = document.getElementById('breadcrumb');
+            if (history.length === 0) {
+                breadcrumb.style.display = 'none';
+                return;
+            }
+
+            let html = '';
+            history.forEach((nodeId, index) => {
+                if (index > 0) html += '<span class="breadcrumb-separator">›</span>';
+                html += `<span class="breadcrumb-item" onclick="goToBreadcrumb(${index})">${nodeId}</span>`;
+            });
+            
+            if (history.length > 0) {
+                html += '<span class="breadcrumb-separator">›</span>';
+            }
+            html += `<span class="breadcrumb-item" style="font-weight: bold;">${currentNode}</span>`;
+            
+            breadcrumb.innerHTML = html;
+            breadcrumb.style.display = 'flex';
+        }
+
+        function goToBreadcrumb(index) {
+            // Remove all nodes after the clicked one
+            while (history.length > index) {
+                analytics.exitNode(currentNode);
+                const removedNode = history.pop();
+                if (removedNode === currentNode) {
+                    currentNode = history[history.length - 1] || 'start';
+                }
+            }
+            displayNode(currentNode);
+        }
+
+        // Mode Switching
+        function switchMode(mode) {
+            if (!isAdmin && mode === 'editor') {
+                showNotification('⚠️ Admin access required');
+                return;
+            }
+
+            currentMode = mode;
+            document.getElementById('viewer-mode').style.display = mode === 'viewer' ? 'block' : 'none';
+            document.getElementById('editor-mode').style.display = mode === 'editor' ? 'block' : 'none';
+            
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            if (mode === 'editor') {
+                renderNodeList();
+                clearValidationErrors();
+                // Show validation results on entering editor mode
+                const errors = validateTree();
+                if (errors.length > 0) {
+                    showValidationErrors(errors);
+                }
+            } else {
+                document.getElementById('statistics-panel').style.display = 'none';
+            }
+        }
+
+        // Editor Mode Functions
+        function renderNodeList() {
+            const list = document.getElementById('nodes-list');
+            const searchTerm = document.getElementById('node-search').value.toLowerCase();
+            
+            let nodes = Object.values(decisionTree);
+            
+            // Filter nodes if search term exists
+            if (searchTerm) {
+                nodes = nodes.filter(node => 
+                    node.id.toLowerCase().includes(searchTerm) || 
+                    node.content.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            let html = '';
+            
+            nodes.forEach(node => {
+                const isSelected = selectedNodeId === node.id;
+                const stats = analytics.getNodeStats(node.id);
+                const typeColors = {
+                    question: 'node-type-question',
+                    result: 'node-type-result',
+                    action: 'node-type-action',
+                    info: 'node-type-info'
+                };
+                
+                html += `
+                    <div class="node-item ${isSelected ? 'selected' : ''}" onclick="selectNodeForEdit('${node.id}')">
+                        <div class="node-item-id">
+                            <span>${node.id}</span>
+                            <span class="node-type-badge ${typeColors[node.type] || ''}">${node.type.charAt(0).toUpperCase()}</span>
+                        </div>
+                        <div class="node-item-content">${node.content.substring(0, 50)}${node.content.length > 50 ? '...' : ''}</div>
+                        <div style="font-size: 11px; color: #666; margin-top: 5px;">
+                            📊 ${stats.visits} visits | ⏱️ ${stats.avgTime}s avg
+                        </div>
+                    </div>
+                `;
+            });
+            
+            list.innerHTML = html;
+        }
+
+        function filterNodes() {
+            renderNodeList();
+        }
+
+        function selectNodeForEdit(nodeId) {
+            selectedNodeId = nodeId;
+            renderNodeList();
+            renderEditor(nodeId);
+        }
+
+        function renderEditor(nodeId) {
+            const node = decisionTree[nodeId];
+            const panel = document.getElementById('editor-panel');
+            
+            let optionsHtml = '';
+            if (node.options) {
+                node.options.forEach((option, index) => {
+                    optionsHtml += `
+                        <div class="option-editor-item">
+                            <input type="text" placeholder="Option Label" value="${option.label}" id="option-label-${index}" oninput="triggerAutoSave()">
+                            <input type="text" placeholder="Next Node ID" value="${option.nextNode}" id="option-next-${index}" oninput="triggerAutoSave()">
+                            <button class="remove-btn" onclick="removeOption(${index})">✕</button>
+                        </div>
+                    `;
+                });
+            }
+            
+            panel.innerHTML = `
+                <h3>Edit Node: ${nodeId}</h3>
+                <div style="margin-bottom: 15px;">
+                    <span class="node-type-badge ${node.type === 'question' ? 'node-type-question' : node.type === 'result' ? 'node-type-result' : node.type === 'action' ? 'node-type-action' : 'node-type-info'}">
+                        ${node.type}
+                    </span>
+                    <button class="btn btn-secondary" onclick="cloneNode('${nodeId}')" style="margin-left: 10px;">Clone Node</button>
+                    <button class="btn btn-secondary" onclick="showNodeStatistics('${nodeId}')" style="margin-left: 5px;">Show Stats</button>
+                </div>
+                <div class="form-group">
+                    <label>Node ID:</label>
+                    <input type="text" id="edit-node-id" value="${node.id}" oninput="triggerAutoSave()">
+                </div>
+                <div class="form-group">
+                    <label>Node Type:</label>
+                    <select id="edit-node-type" onchange="triggerAutoSave()">
+                        <option value="question" ${node.type === 'question' ? 'selected' : ''}>Question</option>
+                        <option value="result" ${node.type === 'result' ? 'selected' : ''}>Result</option>
+                        <option value="action" ${node.type === 'action' ? 'selected' : ''}>Action</option>
+                        <option value="info" ${node.type === 'info' ? 'selected' : ''}>Information</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Content:</label>
+                    <textarea id="edit-node-content" oninput="triggerAutoSave()">${node.content}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Options:</label>
+                    <div class="options-editor" id="options-editor">
+                        ${optionsHtml}
+                    </div>
+                    <button class="btn btn-secondary" onclick="addOption()" style="margin-top: 10px;">+ Add Option</button>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="saveNode()">💾 Save Changes</button>
+                    <button class="btn btn-danger" onclick="deleteNode()">🗑️ Delete Node</button>
+                </div>
+                <div style="margin-top: 15px; font-size: 12px; color: #666;">
+                    Auto-save enabled (every 2 seconds)
+                </div>
+            `;
+            
+            setupAutoSave();
+        }
+
+        function setupAutoSave() {
+            // Clear any existing timer
+            clearTimeout(autoSaveTimer);
+            
+            // Set up auto-save for all inputs
+            document.querySelectorAll('#editor-panel input, #editor-panel textarea, #editor-panel select').forEach(el => {
+                el.addEventListener('input', () => {
+                    clearTimeout(autoSaveTimer);
+                    autoSaveTimer = setTimeout(() => {
+                        saveNode();
+                    }, 2000);
+                });
+            });
+        }
+
+        function triggerAutoSave() {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(() => {
+                saveNode();
+            }, 2000);
+        }
+
+        function addNewNode() {
+            let newId = prompt("Enter new node ID:");
+            if (!newId) return;
+            
+            // Validate node ID
+            if (decisionTree[newId]) {
+                alert("Node ID already exists!");
+                return;
+            }
+            
+            if (!/^[a-zA-Z0-9_]+$/.test(newId)) {
+                alert("Node ID can only contain letters, numbers, and underscores");
+                return;
+            }
+            
+            decisionTree[newId] = {
+                id: newId,
+                type: "question",
+                content: "New node content",
+                options: []
+            };
+            
+            selectNodeForEdit(newId);
+            showNotification('✅ New node created');
+        }
+
+        function saveNode() {
+            const oldId = selectedNodeId;
+            const newId = document.getElementById('edit-node-id').value;
+            const type = document.getElementById('edit-node-type').value;
+            const content = document.getElementById('edit-node-content').value;
+            
+            // Validate new ID
+            if (!/^[a-zA-Z0-9_]+$/.test(newId)) {
+                alert("Invalid node ID. Use only letters, numbers, and underscores.");
+                return;
+            }
+            
+            // Collect options
+            const options = [];
+            let index = 0;
+            while (document.getElementById(`option-label-${index}`)) {
+                const label = document.getElementById(`option-label-${index}`).value;
+                const nextNode = document.getElementById(`option-next-${index}`).value;
+                
+                if (label.trim() && nextNode.trim()) {
+                    options.push({ label, nextNode });
+                }
+                index++;
+            }
+            
+            // Check if we're changing node ID
+            if (oldId !== newId) {
+                // Update all references to the old ID
+                Object.keys(decisionTree).forEach(nodeKey => {
+                    const node = decisionTree[nodeKey];
+                    if (node.options) {
+                        node.options.forEach(option => {
+                            if (option.nextNode === oldId) {
+                                option.nextNode = newId;
+                            }
+                        });
+                    }
+                });
+                
+                // Update history references
+                history = history.map(nodeId => nodeId === oldId ? newId : nodeId);
+                
+                // Update current node reference
+                if (currentNode === oldId) {
+                    currentNode = newId;
+                }
+                
+                // Delete old node and create new
+                delete decisionTree[oldId];
+            }
+            
+            // Save the node
+            decisionTree[newId] = { id: newId, type, content, options };
+            selectedNodeId = newId;
+            
+            renderNodeList();
+            showNotification('✅ Node saved successfully');
+            
+            // Validate tree after save
+            const errors = validateTree();
+            if (errors.length > 0) {
+                showValidationErrors(errors);
+            }
+        }
+
+        function deleteNode() {
+            if (selectedNodeId === 'start') {
+                alert("Cannot delete the start node!");
+                return;
+            }
+            
+            if (confirm(`Delete node "${selectedNodeId}"? This will remove all references to it.`)) {
+                // Remove references to this node
+                Object.keys(decisionTree).forEach(nodeKey => {
+                    const node = decisionTree[nodeKey];
+                    if (node.options) {
+                        node.options = node.options.filter(option => option.nextNode !== selectedNodeId);
+                    }
+                });
+                
+                // Delete the node
+                delete decisionTree[selectedNodeId];
+                selectedNodeId = null;
+                
+                renderNodeList();
+                document.getElementById('editor-panel').innerHTML = '<p style="color: #666; text-align: center;">Select a node to edit or create a new one</p>';
+                showNotification('🗑️ Node deleted');
+            }
+        }
+
+        function addOption() {
+            const container = document.getElementById('options-editor');
+            const index = container.children.length;
+            const div = document.createElement('div');
+            div.className = 'option-editor-item';
+            div.innerHTML = `
+                <input type="text" placeholder="Option Label" id="option-label-${index}" oninput="triggerAutoSave()">
+                <input type="text" placeholder="Next Node ID" id="option-next-${index}" oninput="triggerAutoSave()">
+                <button class="remove-btn" onclick="this.parentElement.remove()">✕</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeOption(index) {
+            const element = document.querySelector(`#option-label-${index}`)?.parentElement;
+            if (element) {
+                element.remove();
+                triggerAutoSave();
+            }
+        }
+
+        function cloneNode(nodeId) {
+            const node = decisionTree[nodeId];
+            let newId = prompt("Enter new node ID for clone:", `${nodeId}_copy`);
+            
+            if (!newId) return;
+            
+            if (decisionTree[newId]) {
+                alert("Node ID already exists!");
+                return;
+            }
+            
+            // Deep clone the node
+            decisionTree[newId] = JSON.parse(JSON.stringify(node));
+            decisionTree[newId].id = newId;
+            
+            renderNodeList();
+            selectNodeForEdit(newId);
+            showNotification('📋 Node cloned successfully');
+        }
+
+        function showNodeStatistics(nodeId) {
+            const node = decisionTree[nodeId];
+            const stats = analytics.getNodeStats(nodeId);
+            
+            // Find nodes that reference this node
+            const references = [];
+            Object.keys(decisionTree).forEach(key => {
+                const n = decisionTree[key];
+                if (n.options) {
+                    n.options.forEach(opt => {
+                        if (opt.nextNode === nodeId) {
+                            references.push(key);
+                        }
+                    });
+                }
+            });
+            
+            alert(`Node Statistics: ${nodeId}
+Type: ${node.type}
+Content: ${node.content.substring(0, 100)}...
+Options: ${node.options?.length || 0}
+Visits: ${stats.visits}
+Average Time: ${stats.avgTime} seconds
+Referenced by: ${references.length} nodes
+${references.join(', ') || 'None'}`);
+        }
+
+        // Tree Validation System
+        function validateTree() {
+            const errors = [];
+            const nodeIds = Object.keys(decisionTree);
+            
+            // Check all nextNode references exist
+            nodeIds.forEach(nodeId => {
+                const node = decisionTree[nodeId];
+                if (node.options) {
+                    node.options.forEach((option, index) => {
+                        if (!decisionTree[option.nextNode] && option.nextNode !== "end") {
+                            errors.push(`Node "${nodeId}" option ${index} ("${option.label}") points to missing node: "${option.nextNode}"`);
+                        }
+                    });
+                }
+            });
+            
+            // Check for orphan nodes (no references to them except start)
+            const referencedNodes = new Set(['start']);
+            nodeIds.forEach(nodeId => {
+                const node = decisionTree[nodeId];
+                if (node.options) {
+                    node.options.forEach(option => {
+                        referencedNodes.add(option.nextNode);
+                    });
+                }
+            });
+            
+            nodeIds.forEach(nodeId => {
+                if (!referencedNodes.has(nodeId) && nodeId !== "start") {
+                    errors.push(`Orphan node: "${nodeId}" is not referenced by any option`);
+                }
+            });
+            
+            // Check for circular references (simple check)
+            nodeIds.forEach(nodeId => {
+                const visited = new Set();
+                let current = nodeId;
+                while (decisionTree[current] && decisionTree[current].options?.[0]?.nextNode) {
+                    if (visited.has(current)) {
+                        errors.push(`Circular reference detected involving node: "${nodeId}"`);
+                        break;
+                    }
+                    visited.add(current);
+                    current = decisionTree[current].options[0].nextNode;
+                }
+            });
+            
+            return errors;
+        }
+
+        function showValidationErrors(errors) {
+            const container = document.getElementById('validation-errors');
+            if (errors.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            let html = '<strong>⚠️ Tree Validation Errors:</strong><br>';
+            errors.forEach(error => {
+                html += `<div class="validation-error-item">• ${error}</div>`;
+            });
+            
+            container.innerHTML = html;
+            container.style.display = 'block';
+        }
+
+        function clearValidationErrors() {
+            document.getElementById('validation-errors').style.display = 'none';
+        }
+
+        // Export/Import Functions
+        function exportDataWithMetadata() {
+            if (!isAdmin) {
+                showNotification('⚠️ Admin access required');
+                return;
+            }
+            
+            const data = {
+                decisionTree: decisionTree,
+                exportDate: new Date().toISOString(),
+                version: "2.0",
+                analytics: analytics.getOverallStats(),
+                validation: validateTree()
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `hbb-decision-tree-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            // Copy to clipboard for quick sharing
+            navigator.clipboard.writeText(dataStr).then(() => {
+                showNotification('✅ Data exported and copied to clipboard!');
+            });
+        }
+
+        function importDataWithValidation() {
+            if (!isAdmin) {
+                showNotification('⚠️ Admin access required');
+                return;
+            }
+            
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = event => {
+                    try {
+                        const imported = JSON.parse(event.target.result);
+                        
+                        // Validate structure
+                        if (!imported.decisionTree || !imported.decisionTree.start) {
+                            throw new Error('Invalid file format: Missing decision tree structure');
+                        }
+                        
+                        // Check for duplicate node IDs
+                        const existingIds = Object.keys(decisionTree);
+                        const newIds = Object.keys(imported.decisionTree);
+                        const duplicates = existingIds.filter(id => newIds.includes(id));
+                        
+                        if (duplicates.length > 0) {
+                            if (confirm(`Found ${duplicates.length} duplicate node IDs. Overwrite existing nodes?`)) {
+                                decisionTree = imported.decisionTree;
+                            } else {
+                                // Merge instead of overwrite
+                                decisionTree = { ...decisionTree, ...imported.decisionTree };
+                            }
+                        } else {
+                            decisionTree = imported.decisionTree;
+                        }
+                        
+                        showNotification('✅ Data imported successfully!');
+                        
+                        // Validate the imported tree
+                        const errors = validateTree();
+                        if (errors.length > 0) {
+                            showValidationErrors(errors);
+                            alert(`Imported with ${errors.length} validation errors. Check editor mode for details.`);
+                        }
+                        
+                        if (currentMode === 'editor') {
+                            renderNodeList();
+                        } else {
+                            resetTree();
+                        }
+                    } catch (error) {
+                        showNotification(`❌ Import error: ${error.message}`);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        // Statistics Functions
+        function showStatistics() {
+            const panel = document.getElementById('statistics-panel');
+            const content = document.getElementById('statistics-content');
+            
+            if (panel.style.display === 'none') {
+                const stats = analytics.getOverallStats();
+                const nodeStats = analytics.getNodeStats(currentNode);
+                
+                content.innerHTML = `
+                    <div class="stat-item">
+                        <div class="stat-value">${stats.totalSessions}</div>
+                        <div class="stat-label">Total Sessions</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${stats.totalVisits}</div>
+                        <div class="stat-label">Total Node Visits</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${stats.completedPaths}</div>
+                        <div class="stat-label">Completed Paths</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${stats.avgPathTime}s</div>
+                        <div class="stat-label">Avg Path Time</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${nodeStats.visits}</div>
+                        <div class="stat-label">Current Node Visits</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${nodeStats.avgTime}s</div>
+                        <div class="stat-label">Avg Time on Node</div>
+                    </div>
+                `;
+                
+                panel.style.display = 'block';
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        function showAllStatistics() {
+            const stats = analytics.getOverallStats();
+            let message = `📊 Overall Statistics:\n\n`;
+            message += `Total Sessions: ${stats.totalSessions}\n`;
+            message += `Total Node Visits: ${stats.totalVisits}\n`;
+            message += `Completed Paths: ${stats.completedPaths}\n`;
+            message += `Average Path Time: ${stats.avgPathTime} seconds\n`;
+            message += `Total Time Tracked: ${stats.totalTime} seconds\n\n`;
+            
+            message += `Top 5 Most Visited Nodes:\n`;
+            const nodes = Object.keys(decisionTree).map(nodeId => ({
+                id: nodeId,
+                visits: analytics.getNodeStats(nodeId).visits
+            })).sort((a, b) => b.visits - a.visits).slice(0, 5);
+            
+            nodes.forEach((node, index) => {
+                message += `${index + 1}. ${node.id}: ${node.visits} visits\n`;
+            });
+            
+            alert(message);
+        }
+
+        // Visualization Functions
+        function generateTreeVisualization() {
+            if (!isAdmin) {
+                showNotification('⚠️ Admin access required');
+                return;
+            }
+            
+            const container = document.createElement('div');
+            container.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: white;
+                z-index: 1001;
+                overflow: auto;
+                padding: 20px;
+            `;
+            
+            let treeHtml = '<h2>🌳 Decision Tree Visualization</h2>';
+            treeHtml += '<div style="margin-bottom: 20px; display: flex; gap: 10px;">';
+            treeHtml += '<button onclick="exportTreeImage()" style="padding: 10px; background: #3b82f6; color: white; border: none; border-radius: 5px;">Export as Image</button>';
+            treeHtml += '<button onclick="this.parentElement.parentElement.parentElement.remove()" style="padding: 10px; background: #dc2626; color: white; border: none; border-radius: 5px;">Close</button>';
+            treeHtml += '</div>';
+            treeHtml += '<div id="tree-content" style="font-family: monospace; white-space: pre; background: #f8f9fa; padding: 20px; border-radius: 5px; overflow-x: auto;">';
+            
+            function buildTree(nodeId, depth = 0, visited = new Set(), path = []) {
+                if (visited.has(nodeId)) {
+                    return `${'  '.repeat(depth)}↳ [Circular: ${nodeId}]\n`;
+                }
+                visited.add(nodeId);
+                path.push(nodeId);
+                
+                const node = decisionTree[nodeId];
+                let result = `${'  '.repeat(depth)}`;
+                
+                // Add node type indicator
+                const typeIcons = { question: '❓', result: '✅', action: '⚠️', info: 'ℹ️' };
+                result += `${typeIcons[node.type] || '📄'} ${nodeId} (${node.type}): ${node.content.substring(0, 30)}...\n`;
+                
+                if (node.options && node.options.length > 0) {
+                    node.options.forEach((option, index) => {
+                        result += `${'  '.repeat(depth + 1)}├─ "${option.label}"\n`;
+                        result += `${'  '.repeat(depth + 1)}└─→ `;
+                        result += buildTree(option.nextNode, depth + 2, new Set(visited), [...path]);
+                    });
+                }
+                
+                return result;
+            }
+            
+            treeHtml += buildTree('start');
+            treeHtml += '</div>';
+            
+            container.innerHTML = treeHtml;
+            document.body.appendChild(container);
+        }
+
+        function exportTreeImage() {
+            alert('Tree visualization exported (in a real implementation, this would export as PNG)');
+            // Note: For actual image export, you would need a library like html2canvas
+        }
+
+        // Keyboard Shortcuts
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                // Ctrl+E to toggle editor/viewer (admin only)
+                if (e.ctrlKey && e.key === 'e' && isAdmin) {
+                    e.preventDefault();
+                    switchMode(currentMode === 'viewer' ? 'editor' : 'viewer');
+                }
+                
+                // Escape to go back to viewer
+                if (e.key === 'Escape') {
+                    if (currentMode === 'editor') switchMode('viewer');
+                    closeLogin();
+                }
+                
+                // Arrow keys for navigation in viewer
+                if (currentMode === 'viewer') {
+                    const options = document.querySelectorAll('.option-btn');
+                    if (e.key === 'ArrowDown' && options.length > 0) {
+                        e.preventDefault();
+                        const focused = document.activeElement;
+                        let index = Array.from(options).indexOf(focused);
+                        options[Math.min(index + 1, options.length - 1)].focus();
+                    }
+                    if (e.key === 'ArrowUp' && options.length > 0) {
+                        e.preventDefault();
+                        const focused = document.activeElement;
+                        let index = Array.from(options).indexOf(focused);
+                        options[Math.max(index - 1, 0)].focus();
+                    }
+                    if (e.key === 'Enter' && document.activeElement.classList.contains('option-btn')) {
+                        const nextNode = document.activeElement.getAttribute('onclick').match(/'([^']+)'/)[1];
+                        selectOption(nextNode);
+                    }
+                }
+            });
+        }
+
+        // Initialize the application
+        window.onload = init;
+    </script>
+</body>
+</html>

@@ -1,0 +1,1071 @@
+/* ====================================
+   VODAFONE BRAND COLOR SCHEME
+   ==================================== */
+   :root {
+    --vodafone-red: #E60000;
+    --vodafone-black: #000000;
+    --vodafone-gray: #CCCCCC;
+    --background: #F7F7F7;
+    --text-color: #333333;
+    --text-light: #666666;
+    --white: #FFFFFF;
+    --border-color: #DDDDDD;
+    --success-green: #2E7D32;
+    --warning-yellow: #F57C00;
+}
+
+/* ====================================
+   GLOBAL STYLES
+   ==================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* ====================================
+   ADMIN ACCESS BUTTON
+   ==================================== */
+.admin-access-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--vodafone-black);
+    color: var(--white);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.admin-access-btn:hover {
+    background-color: #333333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* ====================================
+   MAIN APPLICATION
+   ==================================== */
+.app-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background-color: var(--white);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Header with Vodafone Branding */
+.app-header {
+    background: linear-gradient(135deg, var(--vodafone-red) 0%, #C00000 100%);
+    color: var(--white);
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.vodafone-logo {
+    height: 40px;
+    width: auto;
+    filter: brightness(0) invert(1); /* Makes logo white */
+}
+
+/* Fallback if logo image doesn't exist */
+.vodafone-logo[src*="vodafone-logo.png"]:not([src]) {
+    display: none;
+}
+
+.app-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.export-btn {
+    background-color: var(--white);
+    color: var(--vodafone-red);
+    border: 2px solid var(--white);
+    padding: 10px 24px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.export-btn:hover {
+    background-color: transparent;
+    color: var(--white);
+    transform: translateY(-2px);
+}
+
+/* Main Content */
+.main-content {
+    padding: 40px;
+    min-height: calc(100vh - 100px);
+}
+
+/* ====================================
+   SELECTION SCREEN
+   ==================================== */
+.selection-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+}
+
+.selection-container {
+    text-align: center;
+    width: 100%;
+    max-width: 800px;
+}
+
+.selection-container h2 {
+    color: var(--vodafone-red);
+    font-size: 26px;
+    margin-bottom: 40px;
+    font-weight: 600;
+}
+
+/* Top Row: 3 Buttons */
+.service-buttons-top {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Bottom Row: 2 Buttons (Centered) */
+.service-buttons-bottom {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+    max-width: 460px; /* 2 buttons width + gap */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.service-btn {
+    background-color: var(--white);
+    color: var(--vodafone-red);
+    border: 3px solid var(--vodafone-red);
+    padding: 25px 20px;
+    font-size: 20px;
+    font-weight: 700;
+    border-radius: 50px; /* Pill shape */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.service-btn:hover {
+    background-color: var(--vodafone-red);
+    color: var(--white);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(230, 0, 0, 0.3);
+}
+
+.service-btn.selected {
+    background-color: var(--vodafone-red);
+    color: var(--white);
+    box-shadow: 0 4px 12px rgba(230, 0, 0, 0.4);
+}
+
+/* Symptom Buttons */
+.symptom-selection {
+    animation: fadeIn 0.5s ease;
+}
+
+.symptom-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.symptom-btn {
+    background-color: var(--white);
+    color: var(--vodafone-black);
+    border: 3px solid var(--vodafone-black);
+    padding: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 50px; /* Pill shape */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+}
+
+.symptom-btn:hover {
+    background-color: var(--vodafone-black);
+    color: var(--white);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.symptom-btn.selected {
+    background-color: var(--vodafone-black);
+    color: var(--white);
+}
+
+/* ====================================
+   DIAGNOSTIC SCREEN
+   ==================================== */
+.diagnostic-screen {
+    animation: fadeIn 0.5s ease;
+}
+
+.info-bar {
+    background-color: var(--vodafone-black);
+    color: var(--white);
+    padding: 15px 25px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.info-bar .separator {
+    margin: 0 10px;
+    color: var(--vodafone-red);
+}
+
+/* Breadcrumb */
+.breadcrumb-container {
+    background-color: var(--white);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px 25px;
+    margin-bottom: 30px;
+}
+
+.breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    font-size: 14px;
+}
+
+.breadcrumb-item {
+    color: var(--text-light);
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb-item:hover {
+    color: var(--vodafone-red);
+    text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+    color: var(--vodafone-red);
+    font-weight: 600;
+}
+
+.breadcrumb-separator {
+    color: var(--border-color);
+    user-select: none;
+}
+
+/* Step Content */
+.step-content-container {
+    background-color: var(--white);
+    border: 3px solid var(--vodafone-red);
+    border-radius: 12px;
+    padding: 40px;
+    margin-bottom: 30px;
+    min-height: 300px;
+}
+
+.step-header {
+    border-bottom: 2px solid var(--background);
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+
+#stepNumber {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--vodafone-red);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.step-content {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text-color);
+}
+
+.step-content h3 {
+    color: var(--vodafone-red);
+    margin-bottom: 15px;
+    font-size: 20px;
+}
+
+.step-content p {
+    margin-bottom: 15px;
+}
+
+.step-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 20px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* PS Notes */
+.ps-notes {
+    background-color: #FFF8E1;
+    border-left: 5px solid var(--warning-yellow);
+    padding: 20px;
+    margin-top: 25px;
+    border-radius: 6px;
+    display: flex;
+    gap: 15px;
+    animation: slideIn 0.5s ease;
+}
+
+.ps-notes-icon {
+    font-size: 24px;
+    color: var(--warning-yellow);
+    flex-shrink: 0;
+}
+
+.ps-notes-content {
+    font-size: 15px;
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.action-btn {
+    background-color: var(--vodafone-red);
+    color: var(--white);
+    border: none;
+    padding: 15px 40px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 50px; /* Pill shape */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 200px;
+    box-shadow: 0 3px 10px rgba(230, 0, 0, 0.3);
+}
+
+.action-btn:hover {
+    background-color: #C00000;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(230, 0, 0, 0.5);
+}
+
+.back-to-start {
+    background-color: transparent;
+    color: var(--text-light);
+    border: 2px solid var(--border-color);
+    padding: 12px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+    margin: 0 auto;
+}
+
+.back-to-start:hover {
+    border-color: var(--vodafone-red);
+    color: var(--vodafone-red);
+}
+
+/* ====================================
+   UNDER CONSTRUCTION SCREEN
+   ==================================== */
+.construction-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    animation: fadeIn 0.5s ease;
+}
+
+.construction-content {
+    text-align: center;
+    padding: 60px;
+    background-color: var(--white);
+    border: 3px dashed var(--border-color);
+    border-radius: 12px;
+    max-width: 600px;
+}
+
+.construction-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+}
+
+.construction-content h2 {
+    color: var(--vodafone-red);
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.construction-content p {
+    color: var(--text-light);
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.back-btn {
+    background-color: var(--vodafone-red);
+    color: var(--white);
+    border: none;
+    padding: 12px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 25px;
+    cursor: pointer;
+    margin-top: 30px;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background-color: #C00000;
+    transform: translateY(-2px);
+}
+
+/* ====================================
+   ADMIN PANEL
+   ==================================== */
+.admin-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.admin-content {
+    background-color: var(--white);
+    width: 90%;
+    max-width: 1000px;
+    max-height: 90vh;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    animation: slideDown 0.4s ease;
+}
+
+.admin-header {
+    background-color: var(--vodafone-red);
+    color: var(--white);
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-header h2 {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.close-admin {
+    background: none;
+    border: none;
+    color: var(--white);
+    font-size: 28px;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.close-admin:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.admin-body {
+    padding: 30px;
+    max-height: calc(90vh - 80px);
+    overflow-y: auto;
+}
+
+.admin-section {
+    margin-bottom: 30px;
+}
+
+.admin-section h3 {
+    color: var(--vodafone-red);
+    font-size: 18px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--background);
+    padding-bottom: 8px;
+}
+
+.admin-selectors {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.admin-select {
+    flex: 1;
+    min-width: 150px;
+    padding: 10px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 15px;
+    color: var(--text-color);
+    background-color: var(--white);
+    cursor: pointer;
+}
+
+.admin-select:focus {
+    outline: none;
+    border-color: var(--vodafone-red);
+}
+
+.admin-btn {
+    background-color: var(--vodafone-red);
+    color: var(--white);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.admin-btn:hover {
+    background-color: #C00000;
+    transform: translateY(-2px);
+}
+
+/* Flow Editor */
+.flow-editor {
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    min-height: 200px;
+    background-color: var(--background);
+}
+
+.placeholder-text {
+    text-align: center;
+    color: var(--text-light);
+    font-style: italic;
+    padding: 40px;
+}
+
+.flow-tree {
+    list-style: none;
+    padding-left: 0;
+}
+
+.flow-node {
+    background-color: var(--white);
+    border: 2px solid var(--vodafone-red);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.flow-node-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.flow-node-title {
+    font-weight: 600;
+    color: var(--vodafone-red);
+    font-size: 16px;
+}
+
+.flow-node-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.edit-node-btn,
+.delete-node-btn,
+.add-child-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.edit-node-btn {
+    background-color: #1976D2;
+    color: var(--white);
+}
+
+.edit-node-btn:hover {
+    background-color: #1565C0;
+}
+
+.delete-node-btn {
+    background-color: #D32F2F;
+    color: var(--white);
+}
+
+.delete-node-btn:hover {
+    background-color: #C62828;
+}
+
+.add-child-btn {
+    background-color: var(--success-green);
+    color: var(--white);
+}
+
+.add-child-btn:hover {
+    background-color: #1B5E20;
+}
+
+.flow-node-content {
+    color: var(--text-color);
+    font-size: 14px;
+    line-height: 1.6;
+    padding-left: 20px;
+    border-left: 3px solid var(--background);
+}
+
+.flow-node-children {
+    list-style: none;
+    padding-left: 30px;
+    margin-top: 15px;
+}
+
+/* Node Editor Form */
+.node-editor {
+    background-color: var(--background);
+    border: 2px solid var(--vodafone-red);
+    border-radius: 8px;
+    padding: 25px;
+    margin-top: 20px;
+    animation: slideIn 0.4s ease;
+}
+
+.node-editor h3 {
+    color: var(--vodafone-red);
+    margin-bottom: 20px;
+}
+
+#nodeForm label {
+    display: block;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 8px;
+    margin-top: 15px;
+}
+
+#nodeForm input[type="text"],
+#nodeForm textarea {
+    width: 100%;
+    padding: 10px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--text-color);
+}
+
+#nodeForm input[type="text"]:focus,
+#nodeForm textarea:focus {
+    outline: none;
+    border-color: var(--vodafone-red);
+}
+
+.actions-list {
+    border: 2px dashed var(--border-color);
+    border-radius: 6px;
+    padding: 15px;
+    margin-top: 10px;
+    min-height: 80px;
+}
+
+.action-item {
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.action-item input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.action-item select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+    min-width: 150px;
+}
+
+.remove-action-btn {
+    background-color: #D32F2F;
+    color: var(--white);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.remove-action-btn:hover {
+    background-color: #C62828;
+}
+
+.add-action-btn {
+    background-color: var(--success-green);
+    color: var(--white);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.add-action-btn:hover {
+    background-color: #1B5E20;
+}
+
+.node-form-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.save-node-btn {
+    flex: 1;
+    background-color: var(--vodafone-red);
+    color: var(--white);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.save-node-btn:hover {
+    background-color: #C00000;
+}
+
+.cancel-node-btn {
+    flex: 1;
+    background-color: var(--white);
+    color: var(--text-color);
+    border: 2px solid var(--border-color);
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cancel-node-btn:hover {
+    border-color: var(--vodafone-red);
+    color: var(--vodafone-red);
+}
+
+/* Admin Actions */
+.admin-actions {
+    display: flex;
+    gap: 15px;
+    padding-top: 20px;
+    border-top: 2px solid var(--background);
+    flex-wrap: wrap;
+}
+
+.save-btn {
+    background-color: var(--success-green);
+}
+
+.save-btn:hover {
+    background-color: #1B5E20;
+}
+
+/* ====================================
+   ADMIN LOGIN MODAL
+   ==================================== */
+.admin-login-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1001;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.login-content {
+    background-color: var(--white);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+    width: 90%;
+    animation: slideDown 0.4s ease;
+}
+
+.login-content h2 {
+    color: var(--vodafone-red);
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+#loginForm label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-color);
+}
+
+#loginForm input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 15px;
+    margin-bottom: 20px;
+}
+
+#loginForm input[type="password"]:focus {
+    outline: none;
+    border-color: var(--vodafone-red);
+}
+
+.login-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.login-btn {
+    flex: 1;
+    background-color: var(--vodafone-red);
+    color: var(--white);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+    background-color: #C00000;
+}
+
+.cancel-btn {
+    flex: 1;
+    background-color: var(--white);
+    color: var(--text-color);
+    border: 2px solid var(--border-color);
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+    border-color: var(--vodafone-red);
+    color: var(--vodafone-red);
+}
+
+.login-hint {
+    text-align: center;
+    color: var(--text-light);
+    font-size: 13px;
+    margin-top: 15px;
+    font-style: italic;
+}
+
+/* ====================================
+   ANIMATIONS
+   ==================================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ====================================
+   RESPONSIVE DESIGN
+   ==================================== */
+@media (max-width: 768px) {
+    .app-header {
+        padding: 20px;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .header-content {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .main-content {
+        padding: 20px;
+    }
+
+    .service-buttons-top,
+    .service-buttons-bottom,
+    .symptom-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .step-content-container {
+        padding: 25px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .action-btn {
+        width: 100%;
+    }
+
+    .admin-content {
+        width: 95%;
+    }
+
+    .admin-selectors {
+        flex-direction: column;
+    }
+
+    .admin-actions {
+        flex-direction: column;
+    }
+}
+
+/* ====================================
+   PRINT STYLES
+   ==================================== */
+@media print {
+    .admin-access-btn,
+    .export-btn,
+    .action-buttons,
+    .back-to-start,
+    .admin-panel {
+        display: none !important;
+    }
+
+    .app-container {
+        box-shadow: none;
+    }
+
+    .app-header {
+        background: var(--vodafone-red);
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .step-content-container {
+        border: 2px solid var(--text-color);
+        page-break-inside: avoid;
+    }
+}
