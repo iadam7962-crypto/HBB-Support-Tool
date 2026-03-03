@@ -384,9 +384,14 @@ function startDiagnosticFlow() {
     loadStep(flow.root);
 }
 
-function loadStep(step) {
+function loadStep(step, options = {}) {
+    const { addToHistory = true } = options;
+
     currentStep = step;
-    stepHistory.push(step);
+
+    if (addToHistory) {
+        stepHistory.push(step);
+    }
     
     // Update step number
     document.getElementById('stepNumber').textContent = `Step ${stepHistory.length} of Diagnostic Process`;
@@ -478,7 +483,7 @@ function goToHistoryStep(index) {
     actionHistory = actionHistory.slice(0, index); // NEW: Also trim action history
     
     // Reload that step
-    loadStep(stepHistory[stepHistory.length - 1]);
+    loadStep(stepHistory[stepHistory.length - 1], { addToHistory: false });
 }
 
 function showCompletionMessage() {
